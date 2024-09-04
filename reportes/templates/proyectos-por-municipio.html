@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            color: #666;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 3px;
+            text-align: left;
+            font-size: 9px;
+            min-width: 200px;
+            word-wrap: break-word!important;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+        h1 {
+            text-align: center;
+        }
+        @page {
+            size: A4 landscape;
+            margin: 20mm;
+            @frame footer_frame {
+                -pdf-frame-content: footer_content;
+                left: 0pt;
+                bottom: 10pt;
+                width: 100%;
+                height: 20pt;
+            }
+        }
+        #datos-departamento p, #datos-reporte p{
+            margin: 0;
+        }
+        .column {
+            float: left;
+            width: 33.33%;
+        }
+
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        
+    </style>
+</head>
+
+<body>
+    {% load filters %}  
+    <table style="border: none; width: 100%; border-collapse: collapse;">
+        <tr style="border: none;">
+            <td style="border: none; padding: 0;">
+                <img src="{{ base_url }}/static/img/header-1.png" style="margin-right: 10px; height: 100px;">
+                <img src="{{ base_url }}/static/img/header-2.png" style="height: 100px;">
+            </td>
+            <td style="border: none; text-align: right; padding: 0;">
+                <img src="{{ base_url }}/static/img/header-3.jpeg" style="height: 100px;">
+            </td>
+        </tr>
+    </table>
+    
+    <h1>REPORTE EJECUTIVO DE PROYECTOS POR MUNICIPIO</h1>
+    <table>
+        <thead>
+            {% if first_row %}
+            <tr style="border: 0;">
+                <td colspan="8" style="border: 0;" id="datos-departamento">
+                    <p><b>DEPARTAMENTO:</b> {{ first_row.departamento }} 
+                    <p><b>PROVINCIA:</b> {{ first_row.provincia }}</p>
+                    <p><b>MUNICIPIO:</b> {{ first_row.municipio }}</p>
+                </td>
+                <td colspan="4" style="border: 0;" id="datos-reporte">
+                    <p><b>USUARIO:</b> {{usuario}}</p>
+                    <p><b>FECHA:</b> {{ current_datetime|date:"d/m/Y H:i" }}</p>
+                </td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th>NOMBRE DE PROYECTO</th>
+                <th>ORG. FINANC.</th>
+                <th>EJECUTOR</th>
+                <th>TIPO</th>
+                <th>ESTADO</th>
+                <th>ESTADO DETALLADO</th>
+                <th>FECHA INICIO</th>
+                <th>FECHA CONCL.</th>
+                <th>TOTAL INVERSION</th>
+                <th>AV. FISICO %</th>
+                <th>AV. FINANC. %</th>
+                <th>GOBIERNO</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tbody>
+            {% for proyecto in data %}
+            <tr {% if proyecto.estado == "EN EJECUCIÓN" %} style="background-color: rgb(242, 250, 224);" {% endif %} >
+                <td style="width: 16%;">{{proyecto.nombre}}</td>
+                <td style="width: 10%;">{{proyecto.organizacion}}</td>
+                <td style="width: 8%;">{{proyecto.ejecutor}}</td>
+                <td style="width: 10%;">{{proyecto.tipo}}</td>
+                <td>{% if proyecto.estado == "EN EJECUCIÓN" %} <b style="color: rgb(11, 75, 4);">{{proyecto.estado}}</b> {% else %}{{proyecto.estado}}{% endif %}</td>
+                <td>{{proyecto.estado_detallado}}</td>
+                <td style="width: 5%;">{{proyecto.fecha_inicio}}</td>
+                <td style="width: 5%;">{{proyecto.fecha_conclusion}}</td>
+                <td>{{proyecto.total_inversion|format_with_dots}}</td>
+                <td style="width: 5%;">{{proyecto.avance_fisico}}</td>
+                <td style="width: 5%;">{{proyecto.avance_financiamiento}}</td>
+                <td style="width: 10%;">{{proyecto.gobierno}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </tbody>
+    </table>
+    <br>
+    <hr>
+    <br>
+    <div>
+        <img src="{{ base_url }}/media/grafico_barras_avances.png" alt="Gráfico de avances de proyectos" style="width: 800px;">
+    </div>
+    <div id="footer_content" style="text-align: center;">
+        <pdf:pagenumber>&nbsp;de&nbsp;<pdf:pagecount>
+    </div>
+</body>
+
+</html>

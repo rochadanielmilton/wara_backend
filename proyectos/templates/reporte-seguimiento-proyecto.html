@@ -1,0 +1,429 @@
+{% load custom_filters %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        table {
+            width: 100%; /* Hace que la tabla ocupe el 100% del ancho disponible */
+            border-collapse: separate; /* Necesario para que border-spacing funcione */
+            border-spacing: 5px; /* Espaciado de 2 píxeles entre celdas */
+            margin: 5px;
+        }
+        
+        th, td {
+            border: 1px solid #c6ceff; /* Bordes alrededor de cada celda */
+            padding-top: 3px; /* Espaciado dentro de las celdas */
+            padding-left: 5px;
+            text-align: center; /* Texto centrado en las celdas */
+            margin: 0px;
+            height: auto;
+            
+        }
+
+        th {
+            background-color: #f3f1f1; /* Fondo de los encabezados */
+            font-weight: bold; /* Texto en negrita en los encabezados */
+            width: auto;
+        }
+        @page {
+            size: A4;
+            margin: 20mm;
+            @frame footer_frame {
+                -pdf-frame-content: footer_content;
+                left: 0pt;
+                bottom: 10pt;
+                width: 100%;
+                height: 20pt;
+            }
+        }
+        .container p {
+            margin: 1px;
+            padding-top: 5px;
+            padding-bottom: 1px;
+            text-align: center;
+        }
+
+        .fondo{
+            background-color: rgb(212, 230, 255);
+        }
+
+    </style>
+</head>
+<body>
+
+    <table style="border: none; width: 100%; border-collapse: collapse;">
+        <tr style="border: none;">
+            <td style="border: none; padding: 0;">
+                <img src="{{ base_url }}/static/img/header-1.png" style="margin-right: 10px; height: 60px;">
+            </td>
+            <td colspan="5" style="border: none; padding: 0;">
+                <div style="color: rgb(18, 46, 97); font-weight: bold; font-size: 15px; margin: 0; padding: 0;">
+                    <b>MINISTERIO DE MEDIO AMBIENTE Y AGUAS</b>
+                </div>
+                <div style="color: rgb(18, 46, 97); font-weight: bold; font-size: 13px; margin: 0; padding: 0;">
+                     {% if realizacion_instance.proyecto.viceministerio_id == 1 %}
+                     <b> VICEMINISTERIO DE RECURSOS HÍDRICOS Y RIEGO </b>
+                      {% else %}
+                        <b> VICEMINISTERIO DE AGUA POTABLE Y SANEAMIENTO BASICO </b>
+                       {% endif %}
+                </div>
+            </td>
+            <td style="border: none; text-align: right; padding: 0;">
+                <img src="{{ base_url }}/static/img/header-4.png" style="height: 100px;">
+            </td>
+        </tr>
+    </table>   
+    <div style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);">
+        <p style="text-align: center;padding-top: 5px; font-weight: bold; font-size: 11px;">PROYECTO</p>
+    </div>
+    
+    <div>
+        <p style="text-align: center; font-weight: bold; font-size: 10px;padding-top: 5px; border: 1px solid #c6ceff;">
+            {{ realizacion_instance.proyecto.nombre|default_if_none:"-" }}
+        </p>
+    </div>
+    <div style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);">
+        <p style="text-align: center;padding-top: 5px; font-weight: bold; font-size: 11px;">CARACTERÍSTICAS</p>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 35%;"></th>
+                <th style="width: 15%;"></th>
+                <th style="width: 20%;"></th>
+                <th style="width: 15%;"></th>
+                <th style="width: 15%;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="fondo">Codigo SISIN:</td>
+                <td colspan="2">{{realizacion_instance.proyecto.codigo_sisin|default_if_none:"-"}}</td>
+                <td>Tipo de proyecto:</td>
+                <td>{{realizacion_instance.proyecto.tipo|default_if_none:"-"}}</td>
+            </tr>
+            <tr>
+                <td class="fondo">Sector Económico:</td>
+                <td colspan="4">{{realizacion_instance.proyecto.sector_clasificador.nombre|default_if_none:"-"}}</td>
+            </tr>
+            <tr>
+                <td class="fondo">Subsector Económico:</td>
+                <td colspan="4">{{realizacion_instance.proyecto.sub_sector_clasificador.nombre|default_if_none:"-"}}</td>
+            </tr>
+            <tr>
+                <td class="fondo">Sigla Entidad Ejecutora:</td>
+                <td>-</td>
+                <td class="fondo">Entidad Ejecutora:</td>
+                <td colspan="2">{{realizacion_instance.proyecto.ejecutor|default_if_none:"-"}}</td>
+            </tr>
+            <tr>
+                <td class="fondo">Estado:</td>
+                <td>{{realizacion_instance.proyecto.estado.nombre|default_if_none:"-"}}</td>
+                <td class="fondo">Etapa:</td>
+                <td colspan="2">-</td>
+            </tr>
+            <tr>
+                <td class="fondo">Fecha Inicio Convenio:</td>
+                <td>{{realizacion_instance.proyecto.fecha_inicio|date:"d/m/Y"}}</td>
+                <td class="fondo">Fecha de Conclusión Convenio:</td>
+                <td colspan="2">{{realizacion_instance.proyecto.fecha_conclucion|date:"d/m/Y"}}</td>
+            </tr>
+        </tbody>
+        
+    </table>
+    <table>
+        <tbody>
+            <tr>
+                <td class="fondo" style="width: 17%;"><b>Costo del proyecto:</b></td>
+                <td style="width: 18%;">
+                    <div class="container" style="background-color: rgb(212, 230, 255);" >
+                        <p>Bolivianos</p>
+                        <p>Millones (Bs.)</p>
+                        <p>Millones ($us)</p>
+                        <p>T/C</p>
+                    </div>
+                </td>
+                <td style="width: 15%;">
+                    <div class="container" >
+                        <p>{{realizacion_instance.total_inversion|format_miles}} Bs.</p>
+                        <p>{{realizacion_instance.total_inversion_mill|default_if_none:"-"}} M</p>
+                        <p>-</p>
+                        <p>6.96</p>
+                    </div>
+                </td>
+                <td class="fondo" style="width: 20%;"><b>Presupuestado 2023:</b></td>
+                <td style="width: 15%;">
+                    <div class="container" style=" background-color: rgb(212, 230, 255);">
+                        <p>Bolivianos</p>
+                        <p>Millones (Bs.)</p>
+                        <p>Millones ($us)</p>
+                        <p>T/C</p>
+                    </div>
+                </td>
+                <td style="width: 15%;">
+                    <div class="container" style="background-color: #ffffff;">
+                        <p>-</p>
+                        <p>-</p>
+                        <p>-</p>
+                        <p>6.96</p>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);">
+        <p style="text-align: center;padding-top: 5px; font-weight: bold; font-size: 11px;">OBJETIVO/DESCRIPCIÓN DEL PROYECTO</p>
+    </div> 
+    <table>
+        <tr>
+            <td style="width: 50%;">
+                <div style="text-align: left;">
+                    <p style="background-color: rgb(212, 230, 255);"><b>Objetivo:</b></p>
+                    <p>{{realizacion_instance.proyecto.objetivo|default_if_none:"-"}}</p>
+                </div>
+                <div style="text-align: left;">
+                <p style="background-color: rgb(212, 230, 255);"><b>Descripción:</b></p>
+                <p>{{realizacion_instance.proyecto.observacion|default_if_none:"-"}}</p>
+                </div>
+            </td>
+            <td style="width: 50%;"> 
+                <div>
+                    <img src="{{ base_url }}/media/{{realizacion_instance.proyecto.imagen_proyecto}}" alt="Gráfico de numero de proyectos" style="width:400px"> <br>
+                    <strong style="text-align: center;">Fotrafia 1</strong>
+                </div>
+            </td>
+        </tr>
+    </table>
+<div style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);">
+    <p style="text-align: center;padding-top: 5px; font-weight: bold; font-size: 11px;">BENEFICIOS DEL PROYECTO</p>
+</div>
+<table>
+    <tr>
+        <td class="fondo" style="width: 20%;"><b>Directos:</b></td>
+        <td style="width: 15%;">
+            <div class="container">
+                <p>{{realizacion_instance.proyecto.numero_familias_beneficiadas|format_miles }}</p>
+                <p>-</p>
+            </div>
+        </td>
+        <td style="width: 15%;">
+            <div class="container">
+                <p>familias</p>
+                <p>beneficiarias</p>
+            </div>
+        </td>
+        <td class="fondo" style="width: 20%;"><b>Indirectos:</b></td>
+        <td style="width: 15%;">
+            <div class="container">
+                <p>{{realizacion_instance.proyecto.numero_familias_indirectas|format_miles }}</p>
+                <p>-</p>
+            </div>
+        </td>
+        <td style="width: 15%;">
+            <div class="container">
+                <p>familias</p>
+                <p>beneficiarias</p>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="fondo" style="width: 20%;">Directos:</td>
+        <td style="width: 15%;">{{ realizacion_instance.proyecto.empleos_directos|format_miles }}</td>
+        <td style="width: 15%;">empleos</td>
+        <td class="fondo" style="width: 20%;">Indirectos:</td>
+        <td style="width: 15%;">{{ realizacion_instance.proyecto.empleos_indirectos|format_miles }}</td>
+        <td style="width: 15%;">empleos</td>
+    </tr>
+    <tr>
+        <td class="fondo" style="width: 20%;"><b>Variable de impacto:</b></td>
+        <td style="width: 15%;">
+            <div class="container">
+                <p>-</p>
+                <p>-</p>
+            </div>
+        </td>
+        <td style="width: 15%;">
+            <div class="container">
+                <p>ha</p>
+                <p>otro</p>
+            </div>
+        </td>
+        <td class="fondo" style="width: 20%;"><b>Area de Intervención:</b></td>
+        <td style="width: 15%;">
+            <div class="container">
+                <p>-</p>
+                <p>-</p>
+            </div>
+        </td>
+        <td style="width: 15%;">
+            <div class="container">
+                <p>km2</p>
+                <p>ha</p>
+            </div>
+        </td>
+    </tr>
+</table>
+<div style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);">
+    <p style="text-align: center;padding-top: 5px; font-weight: bold; font-size: 11px;">LOCALIZACIÓN DEL PROYECTO</p>
+</div> 
+<table>
+    <tr>
+        <td class="fondo" style="width: 35%;">Departamento:</td>
+        <td style="width: 65%;" colspan="3">{% for departamento in departamentos %}
+            {{ departamento.nombre }},
+            {% endfor %}</td>
+    </tr>
+    <tr>
+        <td class="fondo" style="width: 35%;" >Provincia:</td>
+        <td style="width: 65%;" colspan="3">{% for provincia in provincias %}
+            {{ provincia.nombre }},
+            {% endfor %}</td>
+    </tr>
+    <tr>
+        <td class="fondo" style="width: 35%;" >Municipio:</td>
+        <td style="width: 65%;" colspan="3">{% for municipio in municipios %}
+            {{ municipio.nombre }},
+            {% endfor %}</td>
+    </tr>
+    <tr>
+        <td class="fondo" style="width: 35%;">Cuenca de Planificación:</td>
+        <td style="width: 15%;">-</td>
+        <td class="fondo" style="width: 20%;">Macrocuenca:</td>
+        <td style="width: 30%;">-</td>
+    </tr>
+    <tr>
+        <td class="fondo" style="width: 35%;" >Cuenca de Gestión:</td>
+        <td style="width: 65%;" colspan="3">-</td>
+    </tr>
+    <tr>
+        <td class="fondo" style="width: 35%;" >Microcuenca:</td>
+        <td style="width: 65%;" colspan="3">-</td>
+    </tr>
+</table>
+<div style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);">
+    <p style="text-align: center;padding-top: 5px; font-weight: bold; font-size: 11px;">ESTADO DE SITUACIÓN</p>
+</div>
+<table>
+    <tr>
+        <td>
+            <div class="container" style="background-color: rgb(212, 230, 255);">
+                <p> Avance financiera (porcentaje)</p>
+                <p> Avance Fisico (porcentaje)</p>
+            </div>
+        </td>
+        <td>
+            <div class="container">
+                <p>{{realizacion_instance.avance_financiamiento|default_if_none:"-"}}%</p>
+                <p>{{realizacion_instance.avance_fisico|default_if_none:"-"}}%</p>
+            </div>
+        </td>
+        <td class="fondo">Observaciones:</td>
+        <td>{{realizacion_instance.proyecto.observaciones|default_if_none:"-"}}</td>
+    </tr>
+    <tr>
+        <td class="fondo">
+            Cancelado financiero:
+        </td>
+        <td>
+            {{realizacion_instance.eje_acum|format_miles}}Bs
+        </td>
+        <td class="fondo">
+            Saldo por cancelar:
+        </td>
+        <td>
+            {{realizacion_instance.saldo_presupuesto|format_miles}}Bs
+        </td>
+    </tr>
+</table>
+<div style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);">
+    <p style="text-align: center;padding-top: 5px; font-weight: bold; font-size: 11px;">FUENTE DE FINANCIAMIENTO</p>
+</div>
+<table>
+    <tr>
+        <td class="fondo">Recursos Interno:</td>
+        <td>
+            <div class="container">
+                <p>En bolivianos:</p>
+                <p>En millones:</p>
+            </div>
+        </td>
+        <td>
+            <div class="container">
+                <p>{{realizacion_instance.contraparte_local|format_miles }}</p>
+                <p>-</p>
+            </div>
+        </td>
+        <td class="fondo"> Recursos Externos:</td>
+        <td>
+            <div class="container">
+                <p>En bolivianos:</p>
+                <p>En millones:</p>
+            </div>
+        </td>
+        <td>
+            <div class="container">
+                <p>{{realizacion_instance.financiamiento_externo|format_miles }}</p>
+                <p>-</p>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td class="fondo">Entidad :</td>
+        <td colspan="2">-</td>
+        <td class="fondo">Organismo(s):</td>
+        <td colspan="2">{{realizacion_instance.org_financ.sigla|default_if_none:"-"}}</td>
+    </tr>
+</table>
+<br>
+    <table>
+        <thead>
+            <tr>
+                <th colspan="11" style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);">HISTORIAL DE AVANCE DEL PROYECTO</th>
+            </tr>
+            <tr>
+                <th style="width: 25px;" class="fondo">N°</th>
+                <th style="width: 45px;" class="fondo">Mes</th>
+                <th style="width: 40px;" class="fondo">Año</th>
+                <th class="fondo">Ejec. Finan. mes(Bs.)</th>
+                <th class="fondo">Acum. Finan. mes(Bs.)</th>
+                <th class="fondo">Ejec. Financiero mes (%)</th>
+                <th class="fondo">Acum. Financiero mes (%)</th>
+                <th class="fondo">Ejec. Fisico mes (%)</th>
+                <th class="fondo">Acum. Avance Fisico (%)</th>
+                <th class="fondo">Saldo presu.(Bs.)</th>
+                <th class="fondo">Fecha Actuali.</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% if seguimientos %}
+            {% for registro in seguimientos %}
+            <tr style="font-size:8px">
+                
+                <td style="width: 25px;">{{forloop.counter}}</td>
+                <td style="width: 45px;" class="fondo"><b>{{registro.mes}}</b></td>
+                <td style="width: 40px;">{{registro.anio}}</td>
+                <td>{{registro.avance_financiero_mes|format_miles}}</td>
+                <td>{{registro.acumulado_financiero_mes|format_miles}}</td>
+                <td>{{registro.porcentaje_avance_financiero_mes}}</td>
+                <td class="fondo"> <b>{{registro.acumulado_porcentaje_financiero_mes}}%</b></td>
+                <td>{{registro.porcentaje_avance_fisico_mes}}</td>
+                <td class="fondo"><b>{{registro.acumulado_porcentaje_fisico_mes}}%</b></td>
+                <td>{{registro.saldo_programado_proyecto|format_miles}}</td>
+                <td>{{registro.fecha_actualizacion_avance|date:"d/m/Y H:i:s"}}</td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="11">Sin registros de avance.</td>
+            </tr>
+            
+            {% endif %}
+        </tbody>
+    </table>
+    <div id="footer_content" style="text-align: center;">
+        <pdf:pagenumber>&nbsp;de&nbsp;<pdf:pagecount>
+    </div>
+</body>
+</html>

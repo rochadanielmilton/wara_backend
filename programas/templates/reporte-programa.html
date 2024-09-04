@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        table {
+            width: 100%; /* Hace que la tabla ocupe el 100% del ancho disponible */
+            border-collapse: separate; /* Necesario para que border-spacing funcione */
+            border-spacing: 5px; /* Espaciado de 2 píxeles entre celdas */
+            margin: 5px;
+        }
+        
+        th, td {
+            border: 1px solid #c6ceff; /* Bordes alrededor de cada celda */
+            padding-top: 3px; /* Espaciado dentro de las celdas */
+            padding-left: 5px;
+            text-align: center; /* Texto centrado en las celdas */
+            margin: 0px;
+            height: auto;
+            
+        }
+
+        th {
+            background-color: #f3f1f1; /* Fondo de los encabezados */
+            font-weight: bold; /* Texto en negrita en los encabezados */
+            width: auto;
+        }
+        @page {
+            size: A4;
+            margin: 20mm;
+            @frame footer_frame {
+                -pdf-frame-content: footer_content;
+                left: 0pt;
+                bottom: 10pt;
+                width: 100%;
+                height: 20pt;
+            }
+        }
+        .container p {
+            margin: 1px;
+            padding-top: 5px;
+            padding-bottom: 1px;
+            text-align: center;
+        }
+
+        .fondo{
+            background-color: rgb(212, 230, 255);
+        }
+
+    </style>
+</head>
+<body>
+
+    <table style="border: none; width: 100%; border-collapse: collapse;">
+        <tr style="border: none;">
+            <td style="border: none; padding: 0;">
+                <img src="{{ base_url }}/static/img/header-1.png" style="margin-right: 10px; height: 60px;">
+            </td>
+            <td colspan="5" style="border: none; padding: 0;">
+                <div style="color: rgb(18, 46, 97); font-weight: bold; font-size: 15px; margin: 0; padding: 0;">
+                    <b>MINISTERIO DE MEDIO AMBIENTE Y AGUAS</b>
+                </div>
+                <div style="color: rgb(18, 46, 97); font-weight: bold; font-size: 13px; margin: 0; padding: 0;">
+                     {% if programa_instance.viceministerio == "VRHR" %}
+                     <b> VICEMINISTERIO DE RECURSOS HÍDRICOS Y RIEGO </b>
+                      {% elif programa_instance.viceministerio == "VAPSB" %}
+                        <b> VICEMINISTERIO DE AGUA POTABLE Y SANEAMIENTO BASICO </b>
+                        {% else %}
+                        <b> VICEMINISTERIO DE MEDIO AMBIENTE </b>
+                        {% endif %}
+                </div>
+            </td>
+            <td style="border: none; text-align: right; padding: 0;">
+                <img src="{{ base_url }}/static/img/header-4.png" style="height: 100px;">
+            </td>
+        </tr>
+    </table>   
+    <div style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);">
+        <p style="text-align: center;padding-top: 5px; font-weight: bold; font-size: 11px;">PROGRAMA</p>
+    </div>
+    
+    <div>
+        <p style="text-align: center; font-weight: bold; font-size: 10px;padding-top: 5px; border: 1px solid #c6ceff;">
+            {{ programa_instance.programas_proyectos }}
+        </p>
+    </div>
+    <div style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);">
+        <p style="text-align: center;padding-top: 5px; font-weight: bold; font-size: 11px;">CARACTERÍSTICAS</p>
+    </div>
+    <table>
+ 
+        <tbody>
+            <tr>
+                <td class="fondo" style="width: 25%;">Nombre programa:</td>
+                <td colspan="2" >{{programa_instance.programas_proyectos|default_if_none:"-"}}</td>
+                <td>Sigla:</td>
+                <td>{{programa_instance.sigla_prog_convenio|default_if_none:"-"}}</td>
+            </tr>
+            <tr>
+                <td class="fondo">Viceministerio:</td>
+                <td colspan="4">{{programa_instance.viceministerio|default_if_none:"-"}}</td>
+            </tr>
+            <tr>
+                <td class="fondo">Entidad Ejecutora:</td>
+                <td colspan="4">{{programa_instance.entidad_ejecutora|default_if_none:"-"}}</td>
+            </tr>
+            <tr>
+                <td class="fondo">Co-Ejecutor:</td>
+                <td colspan="4">{{programa_instance.co_ejecutor|default_if_none:"-"}}</td>
+            </tr>
+            <tr>
+                <td class="fondo">Agencia Financiadora:</td>
+                <td>{{programa_instance.agencia_financiadora|default_if_none:"-"}}</td>
+                <td class="fondo">Descripción Agencia F.:</td>
+                <td colspan="2">{{programa_instance.descripcion_agencia_financiadora|default_if_none:"-"}}</td>
+            </tr>
+            <tr>
+                <td class="fondo">Tipo convenio:</td>
+                <td>{{programa_instance.tipo_convenio|default_if_none:"-"}}</td>
+                <td class="fondo">Documento Respaldo:</td>
+                <td colspan="2">{{programa_instance.documento_respaldo|default_if_none:"-"}}</td>
+            </tr>
+            <tr>
+                <td class="fondo">Cod. convenio contrado:</td>
+                <td>{% if programa_instance.codigo_convenio_contrato %} {{programa_instance.codigo_convenio_contrato}} {% else %} -- {% endif %}</td>
+                <td class="fondo">Tipo de financimiento:</td>
+                <td colspan="2">{{programa_instance.tipo_financiamiento|default_if_none:"-"}}</td>
+            </tr>
+            
+            <tr>
+                <td class="fondo">Departamentos:</td>
+                <td>{% if programa_instance.departamentos_field %} {{programa_instance.departamentos_field}} {% else %} -- {% endif %}</td>
+                <td class="fondo">Municipios:</td>
+                <td colspan="2">{% if programa_instance.municpios %} {{programa_instance.municpios}} {% else %} -- {% endif %}</td>
+            </tr>
+            <tr>
+                <td class="fondo">Sector:</td>
+                <td>{{programa_instance.sector|default_if_none:"-"}}</td>
+                <td class="fondo">Sub Sector:</td>
+                <td colspan="2">{{programa_instance.subsector|default_if_none:"-"}}</td>
+            </tr>
+            <tr>
+                <td class="fondo">fecha suscripcion contrato:</td>
+                <td>{{programa_instance.fecha_suscripcion_convenio_contrato|default_if_none:"-"}}</td>
+                <td class="fondo">fecha vencimiento:</td>
+                <td colspan="2">{{programa_instance.fecha_vencimiento|default_if_none:"-"}}</td>
+            </tr>
+            <tr>
+                <td class="fondo">Nueva Fecha Vencimiento:</td>
+                <td>{{programa_instance.nueva_fecha_vencimiento|default_if_none:"-"}}</td>
+                <td class="fondo">Vigencia:</td>
+                <td colspan="2"><b style="color:green">{{programa_instance.vigente_no_vigente|default_if_none:"-"}}</b></td>
+            </tr>
+            <tr>
+                <td class="fondo">Estado de situación de programa:</td>
+                <td colspan="4">{{programa_instance.estado_situacion_programa_field|default_if_none:"-"}}</td>
+                
+            </tr>
+        </tbody>
+        
+    </table>
+    <div style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);">
+        <p style="text-align: center;padding-top: 5px; font-weight: bold; font-size: 11px;">FUENTE DE FINANCIAMIENTO</p>
+    </div> 
+    <table>
+        <tbody>
+            <tr>
+                <td class="fondo" style="width: 17%;"><b>Recursos Contraparte:</b></td>
+                <td style="width: 18%;">
+                    <div class="container" style="background-color: rgb(212, 230, 255);" >
+                        <p>(En Bolivianos):</p>
+                        <p>(En Millones USD):</p>
+                    </div>
+                </td>
+                <td style="width: 15%;">
+                    <div class="container" >
+                        <p>- Bs.</p>                    
+                        <p>-$us</p>
+                    </div>
+                </td>
+                <td class="fondo" style="width: 20%;"><b>Recursos Crédito y donación:</b></td>
+                <td style="width: 15%;">
+                    <div class="container" style=" background-color: rgb(212, 230, 255);">
+                        <p>(Crédito Bs.)</p>
+                        <p>(Crédito USD.)</p>
+                        <p>(Donación USD.)</p>
+                    </div>
+                </td>
+                <td style="width: 15%;">
+                    <div class="container" style="background-color: #ffffff;">
+                        <p>-Bs.</p>
+                        <p>-$us</p>
+                        <p>-$us</p>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);">
+        <p style="text-align: center;padding-top: 5px; font-weight: bold; font-size: 11px;">OBJETIVO  Y COMPONENTES DEL PROGRAMA</p>
+    </div>
+    <table>
+        <tr>
+            <td>
+                <div style="text-align: left;">
+                    <p style="background-color: rgb(212, 230, 255);"><b>Objetivo:</b></p>
+                    <p>-----</p>
+                </div>
+                <div style="text-align: left;">
+                <p style="background-color: rgb(212, 230, 255);"><b>Componentes:</b></p>
+                <p>-------</p>
+                </div>
+            </td>
+           
+        </tr>
+    </table>
+<div style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);">
+    <p style="text-align: center;padding-top: 5px; font-weight: bold; font-size: 11px;">ESTADO DE SITUACIÓN</p>
+</div>
+<table>
+    <tr>
+        <td class="fondo" style="width:50%;"><b>Financiera (en porcentaje):</b></td>
+        <td style="width: 50%; text-align: left;">------</td>
+        
+    </tr>
+   
+</table>
+<div style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);">
+    <p style="text-align: center;padding-top: 5px; font-weight: bold; font-size: 11px;">OBSERVACIONES</p>
+</div> 
+<table>
+    <tr>
+        <td class="fondo">------</td>        
+    </tr>
+    
+</table>
+
+    <div id="footer_content" style="text-align: center;">
+        <pdf:pagenumber>&nbsp;de&nbsp;<pdf:pagecount>
+    </div>
+</body>
+</html>

@@ -1,0 +1,134 @@
+{% load custom_filters %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        p {
+            color: #666;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: left;
+            font-size: 9px;
+            word-wrap: break-word!important;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        @page {
+            size: A4 landscape;
+            margin: 20mm;
+            @frame footer_frame {
+                -pdf-frame-content: footer_content;
+                left: 0pt;
+                bottom: 10pt;
+                width: 100%;
+                height: 20pt;
+            }
+        }
+
+        #datos-departamento p, #datos-reporte p{
+            margin: 0;
+        }
+
+        .column {
+            float: left;
+            width: 33.33%;
+        }
+
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+    {% load filters %}  
+    <table style="border: none; width: 100%; border-collapse: collapse;">
+        <tr style="border: none;">
+            <td style="border: none; padding: 0;">
+                <img src="{{ base_url }}/static/img/header-1.png" style="margin-right: 10px; height: 100px;">
+                <img src="{{ base_url }}/static/img/header-2.png" style="height: 100px;">
+            </td>
+            <td style="border: none; text-align: right; padding: 0;">
+                <img src="{{ base_url }}/static/img/header-3.jpeg" style="height: 100px;">
+            </td>
+        </tr>
+    </table>
+
+    <h1>REPORTE EJECUTIVO DE PROYECTOS POR SECTOR</h1>
+    <table>
+        <thead>
+            <tr style="border: 0;">
+                <td style="border: 0; width: 40%;" id="datos-departamento">
+                    {% if departamento %}<p><b>DEPARTAMENTO:</b> {{ departamento }}</p> {% else %}<p><b>DEPARTAMENTOS:</b> TODOS</p> {% endif %}
+                    {% if provincia %}<p><b>PROVINCIA:</b> {{ provincia }}</p> {% endif %}
+                    {% if municipio %}<p><b>MUNICIPIO:</b> {{ municipio }}</p>{% endif %}
+                    
+                </td>
+                <td style="border: 0; width: 40%;" id="datos-reporte">
+                    {% if sector %}<p><b>SECTOR:</b> {{ sector }}</p>{% endif %}
+                </td>
+                <td style="border: 0; width: 40%;" id="datos-reporte">
+                    <p><b>USUARIO:</b> {{usuario}}</p>
+                    <p><b>FECHA:</b> {{ current_datetime|date:"d/m/Y H:i" }}</p>
+                </td>
+            </tr>
+
+            <tr>
+                <th style="width: 40%;">NOMBRE DEL SECTOR</th>
+                <th style="width: 30%;">ESTADO</th>
+                <th style="width: 15%;">NRO PROYECTOS</th>
+                <th style="width: 15%;">TOTAL INVERSION (Bs.)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% regroup data by proyecto__sector_clasificador__nombre as sector_grouped %}
+            {% for sector in sector_grouped %}
+                <tr>
+                    <td rowspan="{{ sector.list|length }}">{{ sector.grouper }}</td>
+                    <td>{{ sector.list.0.estado__nombre }}</td>
+                    <td>{{ sector.list.0.nro_proyectos }}</td>
+                    <td>{{ sector.list.0.total_inversion|format_miles }}</td>
+                </tr>
+                {% for aux in sector.list|slice:"1:" %}
+                    <tr>
+                        <td {% if aux.estado__nombre == 'SUB TOTAL' %} style='font-weight: bold; background-color: #eceaea;' {% endif %}>{{ aux.estado__nombre }}</td>
+                        <td {% if aux.estado__nombre == 'SUB TOTAL' %} style='font-weight: bold; background-color: #eceaea;' {% endif %}>{{ aux.nro_proyectos }}</td>
+                        <td {% if aux.estado__nombre == 'SUB TOTAL' %} style='font-weight: bold; background-color: #eceaea;' {% endif %}>{{ aux.total_inversion|format_miles }}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <hr>
+    <br>
+    <div id="footer_content" style="text-align: center;">
+        <pdf:pagenumber>&nbsp;de&nbsp;<pdf:pagecount>
+    </div>
+</body>
+</html>

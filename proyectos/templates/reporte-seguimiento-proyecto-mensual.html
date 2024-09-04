@@ -1,0 +1,312 @@
+{% load custom_filters %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        table {
+            width: 100%; /* Hace que la tabla ocupe el 100% del ancho disponible */
+            border-collapse: separate; /* Necesario para que border-spacing funcione */
+            border-spacing: 5px; /* Espaciado de 2 píxeles entre celdas */
+            margin: 5px;
+        }
+        
+        th, td {
+            border: 1px solid #c6ceff; /* Bordes alrededor de cada celda */
+            padding-top: 3px; /* Espaciado dentro de las celdas */
+            padding-left: 5px;
+            text-align: center; /* Texto centrado en las celdas */
+            margin: 0px;
+            height: auto;
+            
+        }
+
+        th {
+            background-color: #f3f1f1; /* Fondo de los encabezados */
+            font-weight: bold; /* Texto en negrita en los encabezados */
+            width: auto;
+        }
+        @page {
+            size: A4;
+            margin: 20mm;
+            @frame footer_frame {
+                -pdf-frame-content: footer_content;
+                left: 0pt;
+                bottom: 10pt;
+                width: 100%;
+                height: 20pt;
+            }
+        }
+        .container p {
+            margin: 1px;
+            padding-top: 5px;
+            padding-bottom: 1px;
+            text-align: center;
+            font-size:10px;
+        }
+        
+        .fondo{
+            background-color: rgb(212, 230, 255);
+        }
+
+    </style>
+</head>
+<body>
+
+    <table style="border: none; width: 100%; border-collapse: collapse;">
+        <tr style="border: none;">
+            <td style="border: none; padding: 0;">
+                <img src="{{ base_url }}/static/img/header-1.png" style="margin-right: 10px; height: 60px;">
+            </td>
+            <td colspan="5" style="border: none; padding: 0;">
+                <div style="color: rgb(18, 46, 97); font-weight: bold; font-size: 15px; margin: 0; padding: 0;">
+                    <b>MINISTERIO DE MEDIO AMBIENTE Y AGUAS</b>
+                </div>
+                <div style="color: rgb(18, 46, 97); font-weight: bold; font-size: 13px; margin: 0; padding: 0;">
+                     {% if realizacion_instance.proyecto.viceministerio_id == 1 %}
+                     <b> VICEMINISTERIO DE RECURSOS HÍDRICOS Y RIEGO </b>
+                      {% else %}
+                        <b> VICEMINISTERIO DE AGUA POTABLE Y SANEAMIENTO BASICO </b>
+                       {% endif %}
+                      
+                       <p>Reporte de avance del mes <b style="color: rgb(206, 152, 3);">{{seguimiento_instance.mes|upper}}</b></p>
+                </div>
+            </td>
+            <td style="border: none; text-align: right; padding: 0;">
+                <img src="{{ base_url }}/static/img/header-4.png" style="height: 100px;">
+            </td>
+        </tr>
+    </table> 
+    <br>
+    <table>
+        <tr>
+            <td style="border: 0;" id="datos-reporte" colspan="3">
+                <p><b>USUARIO:</b> {{usuario}}</p>
+            </td>
+            <td style="border: 0;" colspan="3">
+                <p><b>FECHA:</b> {{ current_datetime|date:"d/m/Y H:i" }}</p>
+            </td>
+
+        </tr>
+    </table>  
+    <div style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);">
+        <p style="text-align: center;padding-top: 5px; font-weight: bold; font-size: 11px;">PROYECTO</p>
+    </div>
+    
+    <div>
+        <p style="text-align: center; font-weight: bold; font-size: 10px;padding-top: 5px; border: 1px solid #c6ceff;">
+            {{ realizacion_instance.proyecto.nombre }}
+        </p>
+    </div>
+    <div style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);">
+        <p style="text-align: center;padding-top: 5px; font-weight: bold; font-size: 11px;">CARACTERÍSTICAS</p>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 35%;"></th>
+                <th style="width: 15%;"></th>
+                <th style="width: 20%;"></th>
+                <th style="width: 15%;"></th>
+                <th style="width: 15%;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="fondo">Codigo SISIN:</td>
+                <td colspan="2">{{realizacion_instance.proyecto.codigo_sisin|default_if_none:"-"}}</td>
+                <td>Tipo de proyecto:</td>
+                <td>{{realizacion_instance.proyecto.tipo}}</td>
+            </tr>
+            <tr>
+                <td class="fondo">Sector:</td>
+                <td colspan="4">{{realizacion_instance.proyecto.sector_clasificador.name|default_if_none:"-"}}</td>
+            </tr>
+            <tr>
+                <td class="fondo">Lugar:</td>
+                <td colspan="4">{{realizacion_instance.proyecto.lugar|default_if_none:"-"}}</td>
+            </tr>
+            <tr>
+                <td class="fondo">Programa:</td>
+                <td colspan="4">{{realizacion_instance.proyecto.programa|default_if_none:"-"}}</td>
+            </tr>
+            <tr>
+                <td class="fondo">Empresa Constructora:</td>
+                <td>{{realizacion_instance.proyecto.empresa_constructora|default_if_none:"-"}}</td>
+                <td class="fondo">Entidad Ejecutora:</td>
+                <td colspan="2">{{realizacion_instance.proyecto.ejecutor|default_if_none:"-"}}</td>
+            </tr>
+            <tr>
+                <td class="fondo">Estado:</td>
+                <td>{{realizacion_instance.proyecto.estado.nombre|default_if_none:"-"}}</td>
+                <td class="fondo">Etapa:</td>
+                <td colspan="2">-</td>
+            </tr>
+            <tr>
+                <td class="fondo">Fecha Inicio Convenio:</td>
+                <td>{{realizacion_instance.proyecto.fecha_inicio|date:"d/m/Y"}}</td>
+                <td class="fondo">Fecha de Conclusión Convenio:</td>
+                <td colspan="2">{{realizacion_instance.proyecto.fecha_conclucion|date:"d/m/Y"}}</td>
+            </tr>
+        </tbody>
+        
+    </table>
+    <table>
+        <tbody>
+            <tr>
+                <td class="fondo" style="width: 17%;"><b>Costo del proyecto:</b></td>
+                <td style="width: 18%;">
+                    <div class="container" style="background-color: rgb(212, 230, 255);" >
+                        <p>Bolivianos</p>
+                        <p>Millones (Bs.)</p>
+                        <p>Millones ($us)</p>
+                        <p>T/C</p>
+                    </div>
+                </td>
+                <td style="width: 17%;">
+                    <div class="container" >
+                        <p>{{realizacion_instance.total_inversion|format_miles}} Bs.</p>
+                        <p>{{realizacion_instance.total_inversion_mill|default_if_none:"-"}} M</p>
+                        <p>-</p>
+                        <p>6.96</p>
+                    </div>
+                </td>
+                <td class="fondo" style="width: 15%;"><b>Lugar:</b></td>
+                <td style="width: 15%;">
+                    <div class="container" style=" background-color: rgb(212, 230, 255);">
+                        <p>Departamento:</p>
+                        <p>Provincia:</p>
+                        <p>Municipio</p>
+                        <p></p>
+                    </div>
+                </td>
+                <td style="width: 18%;">
+                    <div class="container" style="background-color: #ffffff;">
+                        <p style="text-size: 10px">{% for departamento in departamentos %}
+                            {{ departamento.nombre }},
+                            {% endfor %}</p>
+                        <p>{% for provincia in provincias %}
+                            {{ provincia.nombre }},
+                            {% endfor %}</p>
+                        <p>{% for municipio in municipios %}
+                            {{ municipio.nombre }},
+                            {% endfor %}</p>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <p>Observaciones:</p>
+                    <p>{{realizacion_instance.proyecto.observacion|default_if_none:"-"}}</p>
+                </td>
+            </tr>
+        </tbody>
+    </table> 
+    <br>         
+    <table>
+        <thead>
+            <tr>
+                <td colspan="6" style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);"><b>AVANCE DEL MES <b style="color: rgb(247, 203, 83);">{{seguimiento_instance.mes|upper}}</b> {{seguimiento_instance.anio|upper}}</b></td>
+            </tr>
+            <tr>
+                <td style="width: 15%;" class="fondo">Codigo sisin: </td>
+                <td style="width: 18%; text-align: right;">{{ realizacion_instance.proyecto.codigo_sisin }}</td>
+                <td style="width: 15%;" class="fondo">Nombre proyecto:</td>
+                <td style="width: 19%; text-align: center;">{{ realizacion_instance.proyecto.nombre }}</td>
+                <td style="width: 15%;" class="fondo">Estado:</td>
+                <td style="width: 18%; text-align: right;">{{ realizacion_instance.proyecto.estado.nombre}}</td>
+           </tr>
+           <tr>
+                <td style="width: 12%;" class="fondo">Mes: </td>
+                <td style="width: 18%; text-align: right; ">{{ seguimiento_instance.mes }}</td>
+                <td style="width: 15%;" class="fondo">Anio:</td>
+                <td style="width: 19%; text-align: right; ">{{ seguimiento_instance.anio }}</td>
+                <td style="width: 15%;" class="fondo">Total inversion(Bs.):</td>
+                <td style="width: 18%; text-align: right; ">{{ seguimiento_instance.total_programado_proyecto|format_miles }}</td>
+            </tr>
+            <tr>
+                <td style="width: 15%;" class="fondo">Ejecución del mes(Bs.): </td>
+                <td style="width: 18%; text-align: right;">{{ seguimiento_instance.avance_financiero_mes|format_miles }}</td>
+                <td style="width: 15%;" class="fondo">Acumulado asta el mes(Bs.):</td>
+                <td style="width: 19%; text-align: right; color: rgb(255, 0, 0);">{{ seguimiento_instance.acumulado_financiero_mes|format_miles }}</td>
+                <td style="width: 15%;" class="fondo">Saldo por Ejecutar(Bs.):</td>
+                <td style="width: 18%; text-align: right; color: rgb(255, 0, 0);">{{ seguimiento_instance.saldo_programado_proyecto|format_miles }}</td>
+            </tr>
+            <tr>
+                <td style="width: 15%;" class="fondo">Ejecución del mes (%): </td>
+                <td style="width: 18%; text-align: right; ">{{ seguimiento_instance.porcentaje_avance_financiero_mes }} %</td>
+                <td style="width: 15%;" class="fondo">Acumulado del mes (%):</td>
+                <td style="width: 19%; text-align: right; color: rgb(255, 0, 0);">{{ seguimiento_instance.acumulado_porcentaje_financiero_mes }} %</td>
+                <td style="width: 15%;" class="fondo">Por Ejecutar (%):</td>
+                <td style="width: 18%; text-align: right; color: rgb(255, 0, 0);">{{ seguimiento_instance.porcentaje_resto_financiero_mes }} %</td>
+            </tr>
+
+            <tr>
+                <td style="width: 15%;" class="fondo">Ejecución fisico del mes (%): </td>
+                <td style="width: 18%; text-align: right;">{{ seguimiento_instance.porcentaje_avance_fisico_mes }} %</td>
+                <td style="width: 15%;" class="fondo">Avanve total asta el mes (%):</td>
+                <td style="width: 19%; text-align: right; color: rgb(255, 0, 0);">{{ seguimiento_instance.acumulado_porcentaje_fisico_mes }} %</td>
+                <td style="width: 15%;" class="fondo">Por Ejecutar (%):</td>
+                <td style="width: 18%; text-align: right; color: rgb(255, 0, 0);">{{ seguimiento_instance.porcentaje_resto_fisico_mes }} %</td>
+            </tr>
+            
+            <tr>
+                <td class="fondo" colspan="1">Fecha de Actualización: </td>
+                <td style="text-align: right;" colspan="1"> <b>{{ seguimiento_instance.fecha_actualizacion_avance|date:"d-m-Y H:m" }}</b></td>
+                <td class="fondo" colspan="1">Observación:</td>
+                <td style="text-align: right; color: rgb(255, 0, 0);" colspan="3">{{ seguimiento_instance.observacion }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <br>
+    <br>
+    <table>
+        <thead>
+            <tr>
+                <th colspan="2" style=" color: #ffffff; background-color: rgba(50, 84, 148, 0.726);">FOTOGRAFIAS REGISTRADAS EN EL MES</th>
+            </tr>
+           
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <div>
+                        <img src= "{{ base_url }}/media/{{ seguimiento_instance.fotografia_1}}"alt="Gráfico de numero de proyectos" style="width:400px"> <br>
+                        <strong style="text-align: center;">Fotrafia 1</strong>
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        <img src="{{ base_url }}/media/{{seguimiento_instance.fotografia_2 }}" alt="Gráfico de numero de proyectos" style="width:400px"> <br>
+                        <strong style="text-align: center;">Fotrafia 2</strong>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div>
+                        <img src="{{ base_url }}/media/{{seguimiento_instance.fotografia_3}}" alt="Gráfico de numero de proyectos" style="width:400px"> <br>
+                        <strong style="text-align: center;">Fotrafia 3</strong>
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        <img src="{{ base_url }}/media/{{seguimiento_instance.fotografia_4}}" alt="Gráfico de numero de proyectos" style="width:400px"> <br>
+                        <strong style="text-align: center;">Fotrafia 4</strong>
+                    </div>
+                </td>
+            </tr>
+            {% if not seguimiento_instance.fotografia_1 and not seguimiento_instance.fotografia_2 and not seguimiento_instance.fotografia_3 and not seguimiento_instance.fotografia_4 %}
+            <tr>
+                <td colspan="2">Sin registros de avance.</td>
+            </tr>
+            
+            {% endif %}
+        </tbody>
+    </table>
+    <div id="footer_content" style="text-align: center;">
+        <pdf:pagenumber>&nbsp;de&nbsp;<pdf:pagecount>
+    </div>
+</body>
+</html>

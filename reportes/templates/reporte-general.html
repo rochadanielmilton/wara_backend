@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        p {
+            color: #666;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 3px;
+            text-align: left;
+            font-size: 9px;
+            word-wrap: break-word !important;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: center;
+        }
+
+        {% comment %} .section-title {
+            text-align: center;
+            background-color: #ddd;
+            padding: 5px;
+            font-weight: bold;
+        } {% endcomment %}
+
+        .half-width {
+            width: 50%;
+            vertical-align: top;
+        }
+
+        .img-container {
+            text-align: center;
+        }
+
+        .img-container img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        @page {
+            size: A4;
+            margin: 20mm;
+            @frame footer_frame {
+                -pdf-frame-content: footer_content;
+                left: 0pt;
+                bottom: 10pt;
+                width: 100%;
+                height: 20pt;
+            }
+        }
+
+        #datos-departamento p, #datos-reporte p {
+            margin: 0;
+        }
+
+        .column {
+            float: left;
+            width: 50%;
+        }
+
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+    <table style="border: none; width: 100%; border-collapse: collapse;">
+        <tr style="border: none;">
+            <td style="border: none; padding: 0;">
+                <img src="{{ base_url }}/static/img/header-1.png" style="margin-right: 10px; height: 60px;">
+                
+            </td>
+            <td style="border: none; text-align: right; padding: 0;">
+                <img src="{{ base_url }}/static/img/header-2.png" style="height: 60px;">
+            </td>
+            <td style="border: none; text-align: right; padding: 0;">
+                <img src="{{ base_url }}/static/img/header-3.png" style="height: 60px;">
+            </td>
+        </tr>
+    </table>
+    
+    <h1>REPORTE GENERAL EJECUTIVO INVERSIÓN EN PROYECTOS</h1>
+                  
+    <table>
+        <thead>
+            <tr style="border: 0;">
+                <td style="border: 0; background_color:red">
+                    {% if nombre_departamento %} 
+                    <b>DEPARTAMENTO:</b> {{ nombre_departamento }}
+                    {% else %}
+                    <b>DEPARTAMENTO:</b> TODOS
+                    {% endif %}
+                </td>
+                <td style="border: 0;">
+                    {% if nombre_provincia %} 
+                    <b>PROVINCIA:</b> {{ nombre_provincia }}
+                    {% endif %}
+                </td>
+                <td style="border: 0;" id="datos-reporte">
+                    <p><b>USUARIO:</b> {{usuario}}</p>
+                </td>
+                <td style="border: 0;">
+                    <p><b>FECHA:</b> {{ current_datetime|date:"d/m/Y H:i" }}</p>
+                </td>
+            </tr>
+
+            <tr>
+                <th style="text-align:center;">LUGAR</th>
+                <th style="text-align:center;">CANT. PROGR</th>
+                <th style="text-align:center;">CANT. PROY</th>
+                <th style="text-align:center;">TOTAL INVERSIÓN</th>           
+            </tr>
+        </thead>
+        <tbody>
+            {% for resul in resultado %}
+            <tr>
+                <td style="width: 45%;"> {% if resul.nombre %} {{ resul.nombre }} {% else %} OTROS {% endif %}</td>
+                <td style="width: 15%; text-align: right;">{{ resul.cantidad_programas }}</td>
+                <td style="width: 15%; text-align: right;">{{ resul.cantidad_proyectos }}</td>
+                <td style="width: 25%; text-align: right;">{{ resul.total_inversion }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td style="text-align:center;"><b>TOTALES:</b></td>
+                <td style="width: 15%; text-align: right;"><b></b></td>
+                <td style="width: 15%; text-align: right;"><b>{{ total_proyectos }}</b></td>
+                <td style="width: 25%; text-align: right;"><b>{{ total_inversion }}</b></td>
+            </tr>
+        </tbody>
+    </table>
+    <hr>
+
+    <div class="row">
+        <div class="column">
+            <img src="{{ base_url }}{{ grafico_barras_url }}" alt="Gráfico de numero de proyectos" style="width:800px">
+        </div>
+         <div class="column">
+            <img src="{{ base_url }}{{ grafico_barras2_url }}" alt="Gráfico de inversiones" style="width:800px">
+            
+        </div> 
+    </div>
+    <hr>
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td class="half-width">
+                <br>
+                <div class="section-title">INVERSIÓN POR SECTORES EN MILLONES</div>
+                <br>
+                <table >
+                    <thead>
+                        <tr>
+                            <th>SECTOR</th>
+                            <th>N° PROYECTOS</th>
+                            <th>INVERSIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for resul in datos_sectores %}
+                        <tr>
+                            <td>{{resul.sector_nombre}}</td>
+                            <td style="text-align: right;">{{resul.cantidad_proyectos}}</td>
+                            <td style="text-align: right;">{{resul.total_inversion}}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td style="text-align: center;"><b>TOTALES</b></td>
+                            <td style="text-align: right;"><b>{{datos_totales_proyectos_torta}}</b></td>
+                            <td style="text-align: right;"><b>{{datos_totales_inversion_torta}}</b></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+            <td class="half-width img-container">
+                <img src="{{ base_url }}{{ grafico_tortas_url }}" alt="Gráfico de inversiones">
+            </td>
+        </tr>
+    </table>
+
+    <div id="footer_content" style="text-align: center;">
+        <pdf:pagenumber>&nbsp;de&nbsp;<pdf:pagecount>
+    </div>
+</body>
+</html>
